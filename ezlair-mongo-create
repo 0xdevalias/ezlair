@@ -13,7 +13,7 @@
 # exit 1
 
 #run -d -P --name lair-mongo -v /src/webapp:/opt/webapp training/webapp python app.py
-LAIR_PATH="$HOME/sec/lair"
+LAIR_PATH="$HOME/sec/ezlair"
 LAIR_DB_PATH="$LAIR_PATH/data/db/"
 CONTAINER_NAME="ezlair-mongo"
 EZHEAD="[ezLair-mongo-create]"
@@ -33,12 +33,14 @@ sleep 2s
 echo "$EZHEAD Configuring replica set.."
 REPSET_CMD='rs.initiate({_id:"rs0", members: [{_id: 1, host: "localhost:27017"}]})'
 docker exec "$CONTAINER_NAME" mongo admin --eval "$REPSET_CMD"
+RC="$?"
 echo
-if [ "$?" == "0" ]; then
+if [[ "$RC" = "0" ]]; then
   echo "$EZHEAD Replica set configured."
 else
   echo "$EZHEAD Error: Configuring replica set failed. You'll need to run the following command yourself:"
   echo "  docker exec $CONTAINER_NAME mongo admin --eval '$REPSET_CMD'"
+  exit 1
 fi
 
 echo "$EZHEAD All done. Enjoy!"
