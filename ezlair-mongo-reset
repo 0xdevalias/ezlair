@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 #
 # Lair 'docker mongo' reset helper
 # By Glenn 'devalias' Grant (devalias.net)

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 #
 # Copyright (C) 2016 Glenn 'devalias' Grant (devalias.net)
 #
