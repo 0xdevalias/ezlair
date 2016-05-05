@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Copyright (C) 2016 Glenn 'devalias' Grant (devalias.net)
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+# TODO: Roll all the mongo scripts into a single file (python?)
+# TODO: Make this accept a 'project name' and use seperate databases for each
+
+EZHEAD="[ezLair-mongo-stop]"
+DMONGO="ezlair-mongo"
+
+echo "$EZHEAD Stopping docker container: $DMONGO"
+docker stop -t 10 $DMONGO
+docker ps -af name=$DMONGO

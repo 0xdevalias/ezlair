@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Lair 'docker mongo' reset helper
+# By Glenn 'devalias' Grant (devalias.net)
+#
+
+# TODO: Roll all the mongo scripts into a single file (python?)
+# TODO: Make this accept a 'project name' and use seperate databases for each
+
+EZHEAD="[ezLair-mongo-reset]"
+DMONGO="ezlair-mongo"
+
+echo "$EZHEAD Removing $DMONGO docker containers and db files"
+docker stop $DMONGO > /dev/null 2>&1
+docker rm $DMONGO > /dev/null 2>&1
+rm -r ./data > /dev/null 2>&1
+rm -r ./files > /dev/null 2>&1
+echo "$EZHEAD Done."
+
+docker ps -af name=$DMONGO

@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Copyright (C) 2016 Glenn 'devalias' Grant (devalias.net)
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+# EZHEAD="[ezLair]"
+# DMONGO="ezlair-mongo"
+
+tmux new-session -d -s lair "docker logs -ft ezlair-mongo"
+tmux rename-window "$EZHEAD Lair Framework"
+
+tmux select-window -t lair:0
+tmux split-window -h './ezlair-api-start'
+
+tmux split-window -v -t 1 './ezlair-app-start'
+
+tmux -2 attach-session -t lair

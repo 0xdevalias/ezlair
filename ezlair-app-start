@@ -1,0 +1,53 @@
+#!/usr/bin/env sh
+#
+# Copyright (C) 2016 Glenn 'devalias' Grant (devalias.net)
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+
+cd "$HOME/sec/lair/bundle"
+
+NODE_REQ_VER="0.10.40"
+EZHEAD="[ezLair-app-start]"
+
+# Check node version, install if missing (and use nodenv)
+echo "$EZHEAD `pwd` : Checking node version.."
+if test $(which nodenv); then
+  NODEHEAD="[nodenv]"
+  echo "$EZHEAD Using: `nodenv --version`"
+  if [[ -z "$(nodenv versions | grep $NODE_REQ_VER)" ]]; then
+    echo "$EZHEAD $NODEHEAD Node $NODE_REQ_VER not found. Installing.."
+    nodenv install $NODE_REQ_VER
+    RC=$?
+    if [[ "$RC" != "0" ]]; then
+      echo "$EZHEAD $NODEHEAD Error: Couldn't install node $NODE_REQ_VER"
+      exit 1
+    fi
+  else
+    echo "$EZHEAD $NODEHEAD Found required node version: $NODE_REQ_VER"
+  fi
+
+  echo "$EZHEAD $NODEHEAD Setting local node version: $NODE_REQ_VER"
+  nodenv local $NODE_REQ_VER
+  nodenv version
+elif [[ "v$NODE_REQ_VER" != "$(node --version)" ]]; then
+  echo "$EZHEAD Error: Required node version not found ($NODE_REQ_VER) and you're not running nodenv (https://github.com/nodenv/nodenv)"
+  exit 1
+fi
+
+# Install required packages
+cd "programs/server"
+echo "$EZHEAD `pwd` : Running npm install.."
+npm install
+
+cd "../../"
+
+# Run app
+export ROOT_URL=http://localhost
+export PORT=11014
+export MONGO_URL=mongodb://localhost:27017/lair
+export MONGO_OPLOG_URL=mongodb://localhost:27017/local
+
+echo "$EZHEAD `pwd` : Starting app at $ROOT_URL:$PORT"
+node main.js

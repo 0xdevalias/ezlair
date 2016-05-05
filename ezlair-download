@@ -1,0 +1,103 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2016 Glenn 'devalias' Grant (devalias.net)
+#
+# This software may be modified and distributed under the terms
+# of the MIT license.  See the LICENSE file for details.
+#
+import os
+import json
+import urllib2
+from subprocess import call
+
+URL_APP_JSON = "https://api.github.com/repos/lair-framework/lair/releases/latest"
+URL_API_JSON = "https://api.github.com/repos/lair-framework/api-server/releases/latest"
+
+APP_OSX = "darwin-amd64"
+APP_LINUX = "linux-amd64"
+
+API_OSX = "darwin_amd64"
+API_LINUX = "linux_amd64"
+API_WIN = "windows_amd64.exe"
+
+app_wanted = APP_OSX # TODO: Set this from args
+api_wanted = API_OSX # TODO: Set this from args
+
+# Make sure we are running in the ezLair folder
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+def load_json(url, label):
+    try:
+        return json.load(urllib2.urlopen(url))
+    except urllib2.HTTPError, err:
+        print "[ezLair] Error loading {0} release info".format(label)
+        print "  {0}".format(err)
+        print "  {0}".format(err.read())
+        exit(1)
+
+def parse_json(json, wanted, label):
+    release = filter((lambda x: wanted in x['name']), json['assets'])
+    if len(release) != 1:
+        print "  Error finding {0} download url. Quitting.".format(label)
+        exit(1)
+    
+    ret = {}
+    ret['version'] = json['tag_name']
+    ret['release'] = release[0]
+    ret['url'] = release[0]['browser_download_url']
+    ret['filename'] = release[0]['name']
+    
+    print "  Found {0} download ({1}): {2}".format(
+        label,
+        ret['version'],
+        ret['url'])
+
+    return ret
+
+print "------------------------------------------------"
+print "ezLair 'latest version' download helper"
+print "By Glenn 'devalias' Grant (devalias.net)"
+print "------------------------------------------------"
+
+print "\n[ezLair] Finding latest APP/API releases.."
+
+# Find the latest app release
+app_json = load_json(URL_APP_JSON, "APP")
+app = parse_json(app_json, app_wanted, "APP")
+
+# Find the latest api release
+api_json = load_json(URL_API_JSON, "API")
+api = parse_json(api_json, api_wanted, "API")
+api_localname = "{0}-{1}".format(api['filename'], api['version'])
+
+# Download the latest releases
+print "\n[ezLair] Downloading latest releases.."
+
+# Download APP
+if not os.path.isfile(app['filename']):
+    print "  Downloading APP: {0}".format(app['version'])
+    call(['wget', app['url']])
+    call(['rm', '-rf', './bundle'])
+
+    with open('app-version', 'w') as f:
+        f.write(app['version'])
+else:
+    print "  You already have the latest APP version ({0}): {1}".format(app['version'], app['filename'])
+
+# Extract APP
+if not os.path.isdir('./bundle'):
+    print "    APP not extracted, fixing that.."
+    call(['tar', 'xzf', app['filename']])
+
+# Download API
+if not os.path.isfile(api_localname):
+    print "  Downloading API: {0}".format(api['version'])
+    call(['wget', api['url'], '-O', api_localname])
+    call(['chmod', '+x', api_localname])
+
+    with open('api-version', 'w') as f:
+        f.write(api['version'])
+else:
+    print "  You already have the latest API version ({0}): {1}".format(api['version'], api_localname)
+
+print "\n[ezLair] For install instructions, see: https://github.com/lair-framework/lair/wiki/Installation"

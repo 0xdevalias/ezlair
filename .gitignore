@@ -1,0 +1,13 @@
+# Downloads/Etc
+api-server_*
+lair-v*.tar.gz
+node_modules/
+bundle/
+
+# Data
+data/
+files/
+
+# Versions
+api-version
+app-version
