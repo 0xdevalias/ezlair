@@ -9,6 +9,9 @@
 # EZHEAD="[ezLair]"
 # DMONGO="ezlair-mongo"
 
+./ezlair-mongo-start
+sleep 2s
+
 tmux new-session -d -s lair "docker logs -ft ezlair-mongo"
 tmux rename-window "$EZHEAD Lair Framework"
 
@@ -18,3 +21,5 @@ tmux split-window -h './ezlair-api-start'
 tmux split-window -v -t 1 './ezlair-app-start'
 
 tmux -2 attach-session -t lair
+
+./ezlair-mongo-stop
