@@ -7,7 +7,7 @@ Note: This is a WIP, [YMMV](https://en.wiktionary.org/wiki/YMMV). (I'd like to c
 ## Getting Started
 
 * Current assumptions:
-  * You're setting this up in `~/sec/lair`
+  * You're setting this up in `~/sec/ezlair`
   * You have the [docker native beta](https://blog.docker.com/2016/03/docker-for-mac-windows-beta/) installed (or a version that can [handle volume mounts with mongo](https://docs.mongodb.org/manual/administration/production-notes/#fsync-on-directories), tested on `v1.11.1`)
     * The `ezlair-mongo-*` and `ezlair` scripts require this.
     * Could work around this with a local mongo install.
